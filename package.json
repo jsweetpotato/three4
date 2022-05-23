@@ -1,0 +1,19 @@
+{
+  "name": "three5",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.140.2",
+    "three-orbit-controls": "^82.1.0"
+  },
+  "devDependencies": {
+    "parcel": "^2.5.0"
+  }
+}
