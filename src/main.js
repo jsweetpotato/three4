@@ -1,8 +1,31 @@
 import * as THREE from "three";
-const OrbitControls = require("three-orbit-controls")(THREE);
+import texture from "./images/texture01.jpg"
+import vertex from "./shader/vertex.glsl";
+import fragment from "./shader/fragment.glsl";
 
+const OrbitControls = require("three-orbit-controls")(THREE);
 // Consider marking event handler as 'passive' to make the page more responsive
 // https://stackoverflow.com/questions/39152877/consider-marking-event-handler-as-passive-to-make-the-page-more-responsive
+
+
+// ↓ vertex and fragment shader use THREE.ShaderMaterial();
+// const vertex = `
+//   varying vec2 vUv;
+//   void main(){
+//     gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+//     vUv = uv;
+//   }
+// `;
+
+// const fragment = `
+//   uniform sampler2D colorMap;
+//   varying vec2 vUv;
+//   void main(){
+//     gl_FragColor = texture2D(colorMap, vUv);
+//   }
+// `;
+
+
 class App {
   constructor() {
     this._container = document.querySelector("#container");
@@ -12,6 +35,14 @@ class App {
     this._renderer.setPixelRatio(window.devicePixelRatio);
     this._renderer.setSize(window.innerWidth, window.innerHeight);
     this._container.appendChild(this._renderer.domElement);
+
+    // texture
+    const layer01 = new THREE.TextureLoader().load(texture);
+    layer01.wrapS = layer01.wrapT = THREE.RepeatWrapping;
+    this.layer01 = layer01;
+
+    // time
+    this.time = 0.0;
 
     // scene
     this._scene = new THREE.Scene();
@@ -29,7 +60,7 @@ class App {
 
   _setCamera() {
     this._camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
-    this._camera.position.z = 300;
+    this._camera.position.z = 40;
   }
 
   _setLight() {
@@ -44,7 +75,7 @@ class App {
 
   _setControls() {
     this.controls = new OrbitControls(this._camera, this._container);
-  
+
     this.controls.target = this.cube.position;
     this.controls.rotateSpeed = 0.5;
     this.controls.enableDamping = true;
@@ -54,10 +85,18 @@ class App {
   }
 
   _createMesh() {
-    const box = new THREE.BoxGeometry(100, 100, 100);
-    const meterial = new THREE.MeshNormalMaterial();
+    const box = new THREE.BoxBufferGeometry(10, 10, 10, 256);
+    const shaderMaterial = new THREE.RawShaderMaterial({
+      uniforms: {
+        colorMap: {
+          value: this.layer01,
+        },
+      },
+      vertexShader: vertex,
+      fragmentShader: fragment,
+    });
 
-    const cube = new THREE.Mesh(box, meterial);
+    const cube = new THREE.Mesh(box, shaderMaterial);
     this.cube = cube;
     this._scene.add(cube);
   }
@@ -68,17 +107,24 @@ class App {
     this._renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  render(time) {
+  render() {
     this._renderer.render(this._scene, this._camera);
-    this.update(time);
+    this.update();
     window.requestAnimationFrame(this.render.bind(this));
   }
 
-  update(time) {
-    time *= 0.001;
+  update() {
+    // this.time += 0.01;
+
+    // const v = Math.sin(this.time);
+    // const c1 = new THREE.Vector3(0, 0, 1);
+    // const c2 = new THREE.Vector3(0, 1, 0);
+    // const sphereColour = c1.lerp(c2, v);
+    // this.cube.material.uniforms.sphereColour.value = sphereColour;
+
     this.controls.update();
-    // this.cube.rotation.x = time / 2;
-    // this.cube.rotation.y = time / 2;
+    // this.cube.rotation.x = this.time / 2;
+    // this.cube.rotation.y = this.time / 2;
   }
 }
 
