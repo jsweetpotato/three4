@@ -1,5 +1,4 @@
-# three4
-THREE.js ShaderMaterial with GLSL 
+# THREE.js ShaderMaterial with GLSL 
 
 ## Reference
 [three.js WebGL Shaders Tutorial - For Beginners](https://youtu.be/DxCJmvUZJsc) </br>
